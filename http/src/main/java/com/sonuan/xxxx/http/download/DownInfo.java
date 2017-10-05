@@ -1,5 +1,6 @@
 package com.sonuan.xxxx.http.download;
 
+import com.sonuan.xxxx.http.download.db.annotation.DbTable;
 import com.sonuan.xxxx.http.http.HttpTask;
 
 /**
@@ -7,7 +8,7 @@ import com.sonuan.xxxx.http.http.HttpTask;
  * @date 2017.10.03
  * @desc
  */
-
+@DbTable("down")
 public class DownInfo implements Cloneable {
 
     private String url;
@@ -15,9 +16,8 @@ public class DownInfo implements Cloneable {
     private long currentLength;
     private long totalLength;
     private HttpTask httpTask;
-    private
     @DownloadStatus
-    String status;
+    private String status;
 
     public DownInfo(String url, String filePath) {
         this.url = url;
@@ -91,5 +91,51 @@ public class DownInfo implements Cloneable {
         }
 
         return null;
+    }
+
+    private String id;
+    private String startTime;
+    private String finishTime;
+    private String displayName;
+    private String userId;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getFinishTime() {
+        return finishTime;
+    }
+
+    public void setFinishTime(String finishTime) {
+        this.finishTime = finishTime;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

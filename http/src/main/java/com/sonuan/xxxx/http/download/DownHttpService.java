@@ -30,6 +30,8 @@ public class DownHttpService implements IHttpService {
     private XHttpParams mHttpParams;
     private HttpGet mHttpGet;
     private HttpClient mHttpClient = new DefaultHttpClient();
+    private boolean mIsPaused;
+    private boolean mIsCanceled;
 
     @Override
     public void setUrl(String url) {
@@ -44,8 +46,9 @@ public class DownHttpService implements IHttpService {
             mHttpClient.execute(mHttpGet, new ResponseHandler<Object>() {
                 @Override
                 public Object handleResponse(HttpResponse httpResponse) throws ClientProtocolException, IOException {
-                    if (httpResponse.getStatusLine()
-                            .getStatusCode() == 200) {
+                    int code = httpResponse.getStatusLine()
+                            .getStatusCode();
+                    if (code == 200 || code == 206) {
                         if (mHttpListener != null) {
                             mHttpListener.onSuccess(httpResponse.getEntity());
                         }
@@ -97,22 +100,23 @@ public class DownHttpService implements IHttpService {
     }
 
     @Override
-    public void pause() {
-
-    }
-
-    @Override
     public boolean isPause() {
-        return false;
+        return mIsPaused;
     }
 
     @Override
     public boolean isCanceled() {
-        return false;
+        return mIsCanceled;
+    }
+
+    @Override
+    public void pause() {
+        mIsPaused = true;
     }
 
     @Override
     public boolean cancel() {
-        return false;
+        mIsCanceled = true;
+        return mIsCanceled;
     }
 }

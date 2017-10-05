@@ -10,7 +10,7 @@ public interface IDownCallback {
 
     void onSuccess(DownInfo info);
 
-    void onFailure(DownInfo info);
+    void onFailure(DownInfo info, int code , String text);
 
     void onDownStatusChanged(DownInfo info);
 

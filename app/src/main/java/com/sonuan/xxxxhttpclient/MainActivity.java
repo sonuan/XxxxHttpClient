@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
 
                     @Override
-                    public void onFailure(DownInfo info) {
+                    public void onFailure(DownInfo info, int code, String text) {
                         Log.i(TAG, "onFailure: testDown");
                     }
 

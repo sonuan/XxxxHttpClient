@@ -66,7 +66,7 @@ public class DownListener implements IDownListener {
 
         downloadStatusChanged(DownloadStatus.DOWNLOADING);
         int count = 0;
-        long currentTime = 0L;
+        long currentTime;
 
 
         byte[] buffer = new byte[1024];
@@ -81,6 +81,14 @@ public class DownListener implements IDownListener {
             bos = new BufferedOutputStream(fos);
             int length;
             while ((length = inputStream.read(buffer)) != -1) {
+                if (mIHttpService.isCanceled()) {
+                    downloadFailure(1, "用户取消");
+                    return;
+                }
+                if (mIHttpService.isPause()) {
+                    downloadFailure(2, "用户暂停");
+                    return;
+                }
                 bos.write(buffer, 0, length);
                 ++count;
                 getLength += length;
@@ -100,14 +108,11 @@ public class DownListener implements IDownListener {
                     downloadSizeChanged(mLastLength + getLength, totalLength, speed);
                 }
             }
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (mCallback != null) {
-                        mCallback.onSuccess(mDownInfo);
-                    }
-                }
-            });
+            if (dataLength != getLength) {
+                downloadFailure(3, "下载长度不一致");
+            }else {
+                downloadSuccessed();
+            }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -125,6 +130,29 @@ public class DownListener implements IDownListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void downloadFailure(final int code, final String text) {
+        if (mCallback != null) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onFailure(mDownInfo.clone(), code, text);
+                }
+            });
+        }
+    }
+
+    private void downloadSuccessed() {
+        if (mCallback != null) {
+            final DownInfo copy = mDownInfo.clone();
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onSuccess(copy);
+                }
+            });
         }
     }
 
